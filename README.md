@@ -1,3 +1,4 @@
+
 # raspiFuturaShopProject
 I do a rewrite of the code from the book "Raspberry Pi il mio primo linux embedded" from python to C++
 
@@ -8,7 +9,7 @@ The book is [this](https://www.futurashop.it/libro-raspberry-pi-il-mio-primo-lin
 ## Requirements
 
 - C++ compiler
-- i2c (i2c-tools)
+- i2c (libi2c-dev)
 
 ## Differences from original
 
