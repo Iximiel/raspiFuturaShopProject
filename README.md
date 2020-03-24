@@ -8,7 +8,7 @@ The book is [this](https://www.futurashop.it/libro-raspberry-pi-il-mio-primo-lin
 ## Requirements
 
 - C++ compiler
-- i2c
+- i2c (i2c-tools)
 
 ## Differences from original
 
