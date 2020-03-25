@@ -9,8 +9,8 @@ public:
   int readFromAnalogChannel3(const int& times=3);
   void setAnalogOutputEnabled(const bool&);
   bool getAnalogOutputEnabled() const;
-  constexpr int adapterNumber = 1;
-constexpr int i2CAddress = 0x48;
+  static constexpr int adapterNumber = 1;
+  static constexpr int i2CAddress = 0x48;
 private:
   int readFromAnalogChannel(const int& channel,const int& times);
   enum {
