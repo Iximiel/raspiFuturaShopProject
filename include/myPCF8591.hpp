@@ -22,5 +22,5 @@ private:
   //state
   int deviceFile_;
   bool AnalogOutputEnabled_{false};  
-}
+};
 #endif // MYPCF8591_HPP

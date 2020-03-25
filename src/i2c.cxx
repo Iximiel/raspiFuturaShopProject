@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 //C things
 #include <linux/i2c-dev.h>
@@ -9,8 +10,6 @@ extern "C" {//remember ti include -li2c
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-
-#include <cmath>
 
 constexpr float Vin = 3.3f;
 constexpr float Vref = 3.3f;
