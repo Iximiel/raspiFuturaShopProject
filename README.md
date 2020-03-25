@@ -10,6 +10,7 @@ The book is [this](https://www.futurashop.it/libro-raspberry-pi-il-mio-primo-lin
 
 - C++ compiler
 - i2c (libi2c-dev)
+- gpio (libgpiod-dev)
 
 ## Differences from original
 

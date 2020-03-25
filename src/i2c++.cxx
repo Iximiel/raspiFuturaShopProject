@@ -33,41 +33,41 @@ float ResinstanceFromADCVoltage(const long& res) {
 }
 // this is the c style thing
 int main(int, char**) {
-  int retval =1;
+  int retval =0;
   try{
-  myPCF8591 Device;
+    myPCF8591 Device;
   
-  {
-    long res = Device.readFromAnalogChannel1();
-    float Rlux = ResinstanceFromADCVoltage(res);
-    float Lux = std::pow(Rlux/Rlux0,1.0/-Pend);
-    if(res <0 ){
-      std::cerr << "Failed to read lux\n";
-    } else {
-      std::cout << "Lux: " << Lux <<std::endl;
+    {
+      long res = Device.readFromAnalogChannel1();
+      float Rlux = ResinstanceFromADCVoltage(res);
+      float Lux = std::pow(Rlux/Rlux0,1.0/-Pend);
+      if(res <0 ){
+	std::cerr << "Failed to read lux\n";
+      } else {
+	std::cout << "Lux: " << Lux <<std::endl;
+      }
     }
-  }
-  {
+    {
 
-       long res = Device.readFromAnalogChannel0();
-    float V = VoltageFromADCVoltage(res);
-    float Rth = ResinstanceFromADCVoltage(res);
-    float lR = std::log(Rth/Rth0);
-    float lRsq = lR*lR;
-    float lRcb = lRsq*lR;
-    float T = 1.0f/(sA + sB*lR + sC*lRsq + sD*lRcb);
-    T = T-zeroKelvin - V*V / ( K*Rth);
-    lR = std::log(Rth/10000.0f);
-    float T2 = 1.0f/((1.0f/298.15f) + lR/parB);
-    T2 = T2-zeroKelvin - V*V / ( K*Rth);
-    if(res <0 ){
-      std::cerr << "Failed to read temperature\n";
-    } else {
-      std::cout << "Temperature: " << T <<std::endl;
-      std::cout << "Temperature: " << T2 <<std::endl;
+      long res = Device.readFromAnalogChannel0();
+      float V = VoltageFromADCVoltage(res);
+      float Rth = ResinstanceFromADCVoltage(res);
+      float lR = std::log(Rth/Rth0);
+      float lRsq = lR*lR;
+      float lRcb = lRsq*lR;
+      float T = 1.0f/(sA + sB*lR + sC*lRsq + sD*lRcb);
+      T = T-zeroKelvin - V*V / ( K*Rth);
+      lR = std::log(Rth/10000.0f);
+      float T2 = 1.0f/((1.0f/298.15f) + lR/parB);
+      T2 = T2-zeroKelvin - V*V / ( K*Rth);
+      if(res <0 ){
+	std::cerr << "Failed to read temperature\n";
+      } else {
+	std::cout << "Temperature: " << T <<std::endl;
+	std::cout << "Temperature: " << T2 <<std::endl;
+      }
     }
-  }
-    } catch (const char *problem) {
+  } catch (const char *problem) {
     std::cerr << "\033[1;31mERROR: \033[0m\033[1m" << problem << "\033[0m" << std::endl;
     retval = 1;
   } catch (const std::string &problem) {
