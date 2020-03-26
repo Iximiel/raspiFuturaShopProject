@@ -1,5 +1,5 @@
 /**Partially copied from the examples of libgpiod
-*/
+ */
 #include <iostream>
 #include <string>
 #include <gpiod.hpp>
@@ -7,6 +7,7 @@
 #include <thread>
 
 #include "PCF8591onFT1060M.hpp"
+#include "ledControllerForFT1060M.hpp"
 
 constexpr unsigned int switchPIN = 17;
 constexpr unsigned int plusPIN   = 27;
@@ -37,6 +38,7 @@ int main (int, char**argv) {
     gpiod::chip GPIO("pinctrl-bcm2835");
     FT1060M::PCF8591 i2c;
     i2c.setAnalogOutputEnabled(true);
+    FT1060M::LedController LEDS(GPIO,i2c);
     gpiod::line Switch = GPIO.get_line(switchPIN);
     bool wait = true;
     if (!Switch.is_requested()){      
@@ -56,22 +58,37 @@ int main (int, char**argv) {
 		     gpiod::line_request::EVENT_RISING_EDGE,
 		     0
       });
-    int DACVAL=0;
+    int DACVAL  = 0;
+    int counter = 0;
     while (Switch.get_value()==initialSwitchPosition) {
       auto events = buttons.event_wait(::std::chrono::seconds(1));
       if (events) {      
 	for (auto& lineWithEvent: events) {
 	  DACVAL+=eventRoutine(lineWithEvent.event_read());
+	  if (++counter > 15){
+	    counter = 0;
+	  }
 	}
 	if (DACVAL>255) {
 	  DACVAL=255;
 	} else if (DACVAL<0) {
 	  DACVAL=0;
 	}
-	i2c.writeToAnalogOut(DACVAL);
-	std::cout << " : " << DACVAL << std::endl;
+
+	LEDS.toggleLED1((1&counter)!=0);
+	LEDS.toggleLED2(bool(2&counter));
+			LEDS.toggleLED3(bool(4&counter));
+			LEDS.toggleLED4(bool(8&counter));
+	
+	LEDS.setAUXLedValue(DACVAL);
+	std::cout << " : " << DACVAL  << " " << counter;
+	for(auto test : {1,2,4,8}){
+	  std::cout <<" " << counter & test << " "<<test & counter;
+	}
+	std::cout 		  << std::endl;
       }   
     }
+    LEDS.setAUXLedValue(0);
   } catch (const char *problem) {
     std::cerr << "\033[1;31mERROR: \033[0m\033[1m" << problem << "\033[0m" << std::endl;
     retval = 1;
