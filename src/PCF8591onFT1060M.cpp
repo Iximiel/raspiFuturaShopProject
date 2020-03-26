@@ -28,7 +28,7 @@ namespace FT1060M {
   }
 
   PCF8591::PCF8591(const PCF8591& other)
-    :deviceFile_(other.deviceFile_);
+    :deviceFile_(other.deviceFile_),
     AnalogOutputEnabled_(other.AnalogOutputEnabled_)
   {}
   

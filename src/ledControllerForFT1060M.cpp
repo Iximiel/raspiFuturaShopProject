@@ -3,7 +3,7 @@
 namespace FT1060M {
 
   LedController::LedController(const ::gpiod::chip& gpioChip, const PCF8591& i2c)
-    : GPIOleds_({gpioLED1,gpioLED2,gpioLED3,gpioLED4}),
+    : GPIOleds_(gpioChip.get_lines({gpioLED1,gpioLED2,gpioLED3,gpioLED4})),
       DAC_(i2c) {
     GPIOleds_.request({
 		       "LedController",
@@ -11,7 +11,7 @@ namespace FT1060M {
 		       0
       });
   }
-  void setAUXLedValue(const int &value){
+  void LedController::setAUXLedValue(const int &value){
     //value is 0to255ed within the function
     DAC_.writeToAnalogOut(value);
   }
@@ -27,7 +27,7 @@ namespace FT1060M {
   void LedController::toggleLED4(const bool light){
     toggleLED(gpioLED4,light);
   }
-  void LedController::toggleLED(const int pinNumber&, const bool& light){
+  void LedController::toggleLED(const int &pinNumber, const bool& light){
     GPIOleds_.get(pinNumber).set_value((light)?1:0);
   }
   
