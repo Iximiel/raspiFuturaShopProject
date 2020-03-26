@@ -57,7 +57,7 @@ int main (int, char**argv) {
 		     0
       });
     int DACVAL=0;
-    while (Switch.get_value()!=initialSwitchPosition) {
+    while (Switch.get_value()==initialSwitchPosition) {
       auto events = buttons.event_wait(::std::chrono::seconds(1));
       if (events) {      
 	for (auto& lineWithEvent: events) {
@@ -72,7 +72,6 @@ int main (int, char**argv) {
 	std::cout << " : " << DACVAL << std::endl;
       }   
     }
-    std ::cout  << Switch.get_value()<< " "<< initialSwitchPosition <<std::endl;
   } catch (const char *problem) {
     std::cerr << "\033[1;31mERROR: \033[0m\033[1m" << problem << "\033[0m" << std::endl;
     retval = 1;
