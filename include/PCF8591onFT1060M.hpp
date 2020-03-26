@@ -9,6 +9,7 @@ namespace FT1060M {
     int readFromAnalogChannel1(const int& times=3);
     int readFromAnalogChannel2(const int& times=3);
     int readFromAnalogChannel3(const int& times=3);
+    int writeToAnalogOut(const int& value);
     void setAnalogOutputEnabled(const bool&);
     bool getAnalogOutputEnabled() const;
     static constexpr int adapterNumber = 1;

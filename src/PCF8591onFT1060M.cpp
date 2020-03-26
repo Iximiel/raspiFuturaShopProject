@@ -38,9 +38,21 @@ namespace FT1060M {
   int PCF8591::readFromAnalogChannel3(const int& times){
     return readFromAnalogChannel(3,times);
   }
-
+  
+  int PCF8591::writeToAnalogOut(const int& value){
+    //default set channel to 0, then writes
+        unsigned t= value;
+    if (t > 255) {
+      t =255;
+    } else if (value < 0) {
+      t = 0;
+    } 
+    return i2c_smbus_write_byte_data(deviceFile_,AnalogOutputEnableMask,t);
+  }
+  
   int PCF8591::readFromAnalogChannel(const int& ch,const int& times){
     unsigned channel=unsigned(ch);
+    //the channel are the lowest 2 bits
     if (AnalogOutputEnabled_) {
       channel |= AnalogOutputEnableMask;
     }
