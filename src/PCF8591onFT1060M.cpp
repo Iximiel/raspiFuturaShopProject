@@ -26,6 +26,12 @@ namespace FT1060M {
       throw "not i2c slave\n";
     } ;
   }
+
+  PCF8591::PCF8591(const PCF8591& other)
+    :deviceFile_(other.deviceFile_);
+    AnalogOutputEnabled_(other.AnalogOutputEnabled_)
+  {}
+  
   int PCF8591::readFromAnalogChannel0(const int& times){
     return readFromAnalogChannel(0,times);
   }

@@ -5,6 +5,7 @@ namespace FT1060M {
   class PCF8591 {
   public:
     PCF8591();
+    PCF8591(const PCF8591& );
     int readFromAnalogChannel0(const int& times=3);
     int readFromAnalogChannel1(const int& times=3);
     int readFromAnalogChannel2(const int& times=3);
@@ -16,7 +17,7 @@ namespace FT1060M {
     static constexpr int i2CAddress = 0x48;
   private:
     int readFromAnalogChannel(const int& channel,const int& times);
-    enum {
+    enum masks {
 	  AnalogOutputEnableMask = 1 << 6,
 	  AnalogInputModeMask = 1<<5|1<<4,
 	  AutoIncrementMask = 1<<2,

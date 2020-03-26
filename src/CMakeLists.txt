@@ -1,1 +1,1 @@
-add_library(FT1060M PCF8591onFT1060M.cpp)
+add_library(FT1060M PCF8591onFT1060M.cpp ledControllerForFT1060M.cpp)
