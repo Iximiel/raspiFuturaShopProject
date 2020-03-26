@@ -1,5 +1,5 @@
 #include <iostream>
-#include "myPCF8591.hpp"
+#include "PCF8591onFT1060M.hpp"
 
 #include <math.h>
 #include <string>
@@ -35,7 +35,7 @@ float ResinstanceFromADCVoltage(const long& res) {
 int main(int, char**) {
   int retval =0;
   try{
-    myPCF8591 Device;
+    FT1060M::PCF8591 Device;
   
     {
       long res = Device.readFromAnalogChannel1();
