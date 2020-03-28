@@ -8,10 +8,7 @@
 
 #include "PCF8591onFT1060M.hpp"
 #include "ledControllerForFT1060M.hpp"
-
-constexpr unsigned int switchPIN = 17;
-constexpr unsigned int plusPIN   = 27;
-constexpr unsigned int minusPIN  = 22;
+#include "FT1060Mbase.hpp"
 
 int  eventRoutine(const gpiod::line_event& event) {
   int toRet=0;
@@ -21,7 +18,7 @@ int  eventRoutine(const gpiod::line_event& event) {
   }
 
   
-  if(event.source.offset()==plusPIN) {
+  if(event.source.offset()==FT1060M::pinMap::gpioButton1) {
     toRet=10;
   } else {
     toRet=-10;
@@ -36,7 +33,7 @@ int main (int, char**argv) {
     FT1060M::PCF8591 i2c;
     i2c.setAnalogOutputEnabled(true);
     FT1060M::LedController LEDS(GPIO,i2c);
-    gpiod::line Switch = GPIO.get_line(switchPIN);
+    gpiod::line Switch = GPIO.get_line(FT1060M::pinMap::gpioSwitch);
     bool wait = true;
     if (!Switch.is_requested()){      
       Switch.request({
@@ -48,7 +45,7 @@ int main (int, char**argv) {
       throw "Cannot request the switch";
     }
     const int initialSwitchPosition = Switch.get_value();
-    gpiod::line_bulk buttons = GPIO.get_lines({plusPIN,minusPIN});
+    gpiod::line_bulk buttons = GPIO.get_lines({FT1060M::pinMap::gpioButton1,FT1060M::pinMap::gpioButton2});
     buttons.request({
 		     argv[0],
 		     //gpiod::line_request::EVENT_BOTH_EDGES,
@@ -62,7 +59,7 @@ int main (int, char**argv) {
       if (events) {      
 	for (auto& lineWithEvent: events) {
 	  DACVAL+=eventRoutine(lineWithEvent.event_read());
-	  if (++counter > 15){
+	  if (++counter > 31){
 	    counter = 0;
 	  }
 	}
@@ -76,15 +73,21 @@ int main (int, char**argv) {
 	LEDS.toggleLED2((2&counter)==2);
 	LEDS.toggleLED3((4&counter)==4);
 	LEDS.toggleLED4((8&counter)==8);
+	LEDS.toggleLED5((16&counter)==16);
 	
 	LEDS.setAUXLedValue(DACVAL);
-	/*for(auto test : {1,2,4,8}){
+	std::cout << DACVAL << ", ";
+	for(auto test : {1,2,4,8}){
 	  std::cout <<((counter & test)!=0);
 	}
 	std::cout 		  << std::endl;
-	*/
       }   
     }
+    LEDS.toggleLED1(false);
+    LEDS.toggleLED2(false);
+    LEDS.toggleLED3(false);
+    LEDS.toggleLED4(false);
+    LEDS.toggleLED5(false);
     LEDS.setAUXLedValue(0);
     std::this_thread::sleep_for (std::chrono::seconds(1));
   } catch (const char *problem) {
