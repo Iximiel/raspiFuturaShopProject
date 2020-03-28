@@ -15,11 +15,8 @@ constexpr unsigned int minusPIN  = 22;
 
 int  eventRoutine(const gpiod::line_event& event) {
   int toRet=0;
-  if (event.event_type == gpiod::line_event::RISING_EDGE) {
-    std::cout << "RISING EDGE ";
-  } else if (event.event_type == gpiod::line_event::FALLING_EDGE) {
-    std::cout << "FALLING EDGE";
-  } else {
+  if (!(event.event_type == gpiod::line_event::RISING_EDGE
+	|| event.event_type == gpiod::line_event::FALLING_EDGE)) {
     throw std::logic_error("invalid event type");
   }
 
@@ -75,20 +72,21 @@ int main (int, char**argv) {
 	  DACVAL=0;
 	}
 
-	LEDS.toggleLED1((1&counter)!=0);
-	LEDS.toggleLED2(bool(2&counter));
-			LEDS.toggleLED3(bool(4&counter));
-			LEDS.toggleLED4(bool(8&counter));
+	LEDS.toggleLED1((1&counter)==1);
+	LEDS.toggleLED2((2&counter)==2);
+	LEDS.toggleLED3((4&counter)==4);
+	LEDS.toggleLED4((8&counter)==8);
 	
 	LEDS.setAUXLedValue(DACVAL);
-	std::cout << " : " << DACVAL  << " " << counter;
-	for(auto test : {1,2,4,8}){
-	  std::cout <<" " << counter & test << " "<<test & counter;
+	/*for(auto test : {1,2,4,8}){
+	  std::cout <<((counter & test)!=0);
 	}
 	std::cout 		  << std::endl;
+	*/
       }   
     }
     LEDS.setAUXLedValue(0);
+    std::this_thread::sleep_for (std::chrono::seconds(1));
   } catch (const char *problem) {
     std::cerr << "\033[1;31mERROR: \033[0m\033[1m" << problem << "\033[0m" << std::endl;
     retval = 1;

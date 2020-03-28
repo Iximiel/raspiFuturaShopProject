@@ -1,5 +1,7 @@
 #include "ledControllerForFT1060M.hpp"
+#include "FT1060Mbase.hpp"
 
+#include <iostream> 
 namespace FT1060M {
   //redundant redeclaration for compatibility
   /*  constexpr int LedController::gpioLED1;
@@ -8,7 +10,7 @@ namespace FT1060M {
   constexpr int LedController::gpioLED4;*/
 
   LedController::LedController(const ::gpiod::chip& gpioChip, const PCF8591& i2c)
-    : GPIOleds_(gpioChip.get_lines({gpioLED1,gpioLED2,gpioLED3,gpioLED4})),
+    : GPIOleds_(gpioChip.get_lines({pinMap::gpioLED1,pinMap::gpioLED2,pinMap::gpioLED3,pinMap::gpioLED4,pinMap::gpioLED5})),
       DAC_(i2c) {
     GPIOleds_.request({
 		       "LedController",
@@ -32,8 +34,13 @@ namespace FT1060M {
   void LedController::toggleLED4(const bool light){
     toggleLED(3,light);
   }
+    void LedController::toggleLED5(const bool light){
+    toggleLED(4,light);
+  }
   void LedController::toggleLED(const int &pinNumber, const bool& light){
-    GPIOleds_.get(pinNumber).set_value((light)?1:0);
+    auto values = GPIOleds_.get_values();
+    values[pinNumber] = ((light)?1:0);
+    GPIOleds_.set_values(values);
   }
   
 }
