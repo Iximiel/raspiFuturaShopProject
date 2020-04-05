@@ -35,10 +35,11 @@ float ResinstanceFromADCVoltage(const long& res) {
 int main(int, char**) {
   int retval =0;
   try{
-    FT1060M::PCF8591 Device;
+    //to initialize the device
+    FT1060M::PCF8591::getPCF8591();
   
     {
-      long res = Device.readFromAnalogChannel1();
+      long res =     FT1060M::PCF8591::getPCF8591().readFromAnalogChannel1();
       float Rlux = ResinstanceFromADCVoltage(res);
       float Lux = std::pow(Rlux/Rlux0,1.0/-Pend);
       if(res <0 ){
@@ -49,7 +50,7 @@ int main(int, char**) {
     }
     {
 
-      long res = Device.readFromAnalogChannel0();
+      long res =     FT1060M::PCF8591::getPCF8591().readFromAnalogChannel0();
       float V = VoltageFromADCVoltage(res);
       float Rth = ResinstanceFromADCVoltage(res);
       float lR = std::log(Rth/Rth0);

@@ -34,9 +34,8 @@ void eventRoutine(const gpiod::line_event& event) {
 
 }
 
-void ledServer(const gpiod::chip & GPIO,
-	       const FT1060M::PCF8591& i2c){
-  FT1060M::LedController LEDS(GPIO,i2c);
+void ledServer(const gpiod::chip & GPIO){
+  FT1060M::LedController LEDS(GPIO);
   while(buttons.run){
     LEDS.toggleLED1(buttons.p1);
     LEDS.toggleLED2(buttons.p2);
@@ -82,10 +81,9 @@ int main (int, char**argv) {
   try{
     buttons.run=true;
     gpiod::chip GPIO("pinctrl-bcm2835");
-    FT1060M::PCF8591 i2c;
-    i2c.setAnalogOutputEnabled(true);
+    FT1060M::PCF8591::getPCF8591().setAnalogOutputEnabled(true);
     std::thread tbt(buttonServer,GPIO);
-    std::thread tld(ledServer,GPIO,i2c);
+    std::thread tld(ledServer,GPIO);
     tbt.join();
     tld.join();
 

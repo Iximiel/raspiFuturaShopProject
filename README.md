@@ -8,9 +8,13 @@ The book is [this](https://www.futurashop.it/libro-raspberry-pi-il-mio-primo-lin
 
 ## Requirements
 
-- C++ compiler
-- i2c (libi2c-dev)
-- gpio (libgpiod-dev)
+- C++
+  - i2c (libi2c-dev)
+  - gpio (libgpiod-dev)
+- emoncms [using requisites from](https://github.com/emoncms/emoncms)
+  - MySQL
+  - apache 2
+  - 
 
 ## Differences from original
 

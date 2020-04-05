@@ -1,26 +1,26 @@
 #include "ledControllerForFT1060M.hpp"
 #include "FT1060Mbase.hpp"
+#include "PCF8591onFT1060M.hpp"
+#include <iostream>
 
-#include <iostream> 
 namespace FT1060M {
-  //redundant redeclaration for compatibility
-  /*  constexpr int LedController::gpioLED1;
-  constexpr int LedController::gpioLED2;
-  constexpr int LedController::gpioLED3;
-  constexpr int LedController::gpioLED4;*/
 
-  LedController::LedController(const ::gpiod::chip& gpioChip, const PCF8591& i2c)
-    : GPIOleds_(gpioChip.get_lines({pinMap::gpioLED1,pinMap::gpioLED2,pinMap::gpioLED3,pinMap::gpioLED4,pinMap::gpioLED5})),
-      DAC_(i2c) {
+  LedController::LedController(const ::gpiod::chip& gpioChip)
+    : GPIOleds_(gpioChip.get_lines({pinMap::gpioLED1,pinMap::gpioLED2,pinMap::gpioLED3,pinMap::gpioLED4,pinMap::gpioLED5})) {
     GPIOleds_.request({
 		       "LedController",
 		       ::gpiod::line_request::DIRECTION_OUTPUT,
 		       0
       });
   }
+  
+  LedController::~LedController(){
+    GPIOleds_.release();
+  }
+  
   void LedController::setAUXLedValue(const int &value){
     //value is 0to255ed within the function
-    DAC_.writeToAnalogOut(value);
+      PCF8591::getPCF8591().writeToAnalogOut(value);
   }
   void LedController::toggleLED1(const bool light){
     toggleLED(0,light);

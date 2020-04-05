@@ -11,8 +11,15 @@ extern "C" {//remember ti include -li2c
 #include <errno.h>
 #include <string.h>
 #include <string>
+#include <memory>
+
 namespace FT1060M {
-  PCF8591::PCF8591(){
+  PCF8591& PCF8591::getPCF8591() {
+    static std::unique_ptr<PCF8591> instance(new PCF8591());
+    return *instance;
+  }
+  
+  PCF8591::PCF8591() {
     std::string device = "/dev/i2c-";
     device+=std::to_string(adapterNumber);
     deviceFile_ = open(device.c_str(), O_RDWR);
@@ -26,11 +33,6 @@ namespace FT1060M {
       throw "not i2c slave\n";
     } ;
   }
-
-  PCF8591::PCF8591(const PCF8591& other)
-    :deviceFile_(other.deviceFile_),
-    AnalogOutputEnabled_(other.AnalogOutputEnabled_)
-  {}
   
   int PCF8591::readFromAnalogChannel0(const int& times){
     return readFromAnalogChannel(0,times);
