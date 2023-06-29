@@ -2,7 +2,8 @@
 #include <cmath>
 
 //C things
-extern "C" {//remember ti include -li2c
+extern "C" {
+  //remember to include -li2c
 #include <linux/i2c-dev.h>
 #include <i2c/smbus.h>
 }

@@ -2,8 +2,8 @@
 
 
 //C things
-#include <linux/i2c-dev.h>
 extern "C" {//remember ti include -li2c
+#include <linux/i2c-dev.h>
 #include <i2c/smbus.h>
 }
 #include <sys/ioctl.h>
@@ -20,9 +20,9 @@ namespace FT1060M {
   }
   
   PCF8591::PCF8591() {
-    std::string device = "/dev/i2c-";
-    device+=std::to_string(adapterNumber);
-    deviceFile_ = open(device.c_str(), O_RDWR);
+    std::string device_{"/dev/i2c-"};
+    device_+=std::to_string(adapterNumber);
+    deviceFile_ = open(device_.c_str(), O_RDWR);
     if (deviceFile_ < 0) {
       /* ERROR HANDLING; you can check errno to see what went wrong */
       throw std::string("failed to open device, code") + std::to_string(deviceFile_);
@@ -34,20 +34,22 @@ namespace FT1060M {
     } ;
   }
   
-  int PCF8591::readFromAnalogChannel0(const int& times){
+  //PCF8591::~PCF8591()=default;
+
+  int PCF8591::readFromAnalogChannel0(const int times){
     return readFromAnalogChannel(0,times);
   }
-  int PCF8591::readFromAnalogChannel1(const int& times){
+  int PCF8591::readFromAnalogChannel1(const int times){
     return readFromAnalogChannel(1,times);
   }
-  int PCF8591::readFromAnalogChannel2(const int& times){
+  int PCF8591::readFromAnalogChannel2(const int times){
     return readFromAnalogChannel(2,times);
   }
-  int PCF8591::readFromAnalogChannel3(const int& times){
+  int PCF8591::readFromAnalogChannel3(const int times){
     return readFromAnalogChannel(3,times);
   }
   
-  int PCF8591::writeToAnalogOut(const int& value){
+  int PCF8591::writeToAnalogOut(const int value){
     //default set channel to 0, then writes
         unsigned t= value;
     if (t > 255) {
@@ -58,7 +60,7 @@ namespace FT1060M {
     return i2c_smbus_write_byte_data(deviceFile_,AnalogOutputEnableMask,t);
   }
   
-  int PCF8591::readFromAnalogChannel(const int& ch,const int& times){
+  int PCF8591::readFromAnalogChannel(const int ch,const int times){
     unsigned channel=unsigned(ch);
     //the channel are the lowest 2 bits
     if (AnalogOutputEnabled_) {
@@ -69,13 +71,14 @@ namespace FT1060M {
     i2c_smbus_read_byte(deviceFile_);
     int res = i2c_smbus_read_byte(deviceFile_);
     if (res < 0) {
-      throw "error at reading channel 0";
+      throw "error at reading channel " + std::to_string(channel);
     }
     return res;
   }
-  void PCF8591::setAnalogOutputEnabled(const bool& flag) {
+
+  void PCF8591::setAnalogOutputEnabled(const bool flag) {
     AnalogOutputEnabled_ = flag;
   }
   bool PCF8591::getAnalogOutputEnabled() const { return AnalogOutputEnabled_;}
 
-}
+} //namespace FT1060M

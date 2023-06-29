@@ -30,8 +30,10 @@ int main (int, char**argv) {
   int retval =0;
   try{
     gpiod::chip GPIO("pinctrl-bcm2835");
-    
-    FT1060M::PCF8591::getPCF8591().setAnalogOutputEnabled(true);
+    {
+      bool enableAnalogInput=true;
+      FT1060M::PCF8591::getPCF8591().setAnalogOutputEnabled(enableAnalogInput);
+    }
     FT1060M::LedController LEDS(GPIO);
     gpiod::line Switch = GPIO.get_line(FT1060M::pinMap::gpioSwitch);
     bool wait = true;
