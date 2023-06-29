@@ -2,8 +2,8 @@
 #include <cmath>
 
 //C things
-#include <linux/i2c-dev.h>
 extern "C" {//remember ti include -li2c
+#include <linux/i2c-dev.h>
 #include <i2c/smbus.h>
 }
 #include <sys/ioctl.h>
