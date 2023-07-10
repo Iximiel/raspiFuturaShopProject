@@ -11,9 +11,9 @@ extern "C" { // remember to include -li2c
 #include <string.h>
 #include <string>
 #include <sys/ioctl.h>
-
+#ifndef NDEBUG
 #include <iostream>
-
+#endif
 namespace FT1060M {
   PCF8591 &PCF8591::getPCF8591 () {
     static std::unique_ptr<PCF8591> instance (new PCF8591 ());
@@ -63,21 +63,35 @@ namespace FT1060M {
   }
 
   int PCF8591::readFromAnalogChannel (const int ch, int times) {
-    unsigned channel = unsigned (ch);
+    __u8 channel = __u8 (ch);
     // the channel are the lowest 2 bits
     if (AnalogOutputEnabled_) {
       channel |= AnalogOutputEnableMask;
     }
     int write_check = -1;
+    int readTimes = times;
     do {
       write_check = i2c_smbus_write_byte (deviceFile_, channel);
-      std::cout << "reding " << ch << " : " << write_check << " " << times
+#ifndef NDEBUG
+      std::cout << "writing " << ch << " : " << write_check << " " << times
                 << "\n";
+#endif
       --times;
-    } while (!write_check && times > 0);
+    } while (write_check != 0 && times > 0);
+    if (write_check < 0) {
+      throw "error at preparing channel " + std::to_string (channel) +
+        " for reading";
+    }
     i2c_smbus_read_byte (deviceFile_);
     i2c_smbus_read_byte (deviceFile_);
-    int res = i2c_smbus_read_byte (deviceFile_);
+    int res = -1;
+    do {
+      res = i2c_smbus_read_byte (deviceFile_);
+#ifndef NDEBUG
+      std::cout << "reading " << ch << " : " << res << " " << times << "\n";
+#endif
+      --readTimes;
+    } while (write_check != 0 && readTimes > 0);
     if (res < 0) {
       throw "error at reading channel " + std::to_string (channel);
     }
