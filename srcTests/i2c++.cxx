@@ -1,9 +1,10 @@
 #include <iostream>
 #include "PCF8591onFT1060M.hpp"
+#include "parameters.hpp"
 
 #include <math.h>
 #include <string>
-
+/*
 constexpr float Vin = 3.3f;
 constexpr float Vref = 3.3f;
 constexpr int adapterNumber = 1;
@@ -22,7 +23,7 @@ constexpr float parB = 4100.0f;
 //lux sensor
 constexpr float Rlux0 = 70000.0f;
 constexpr float Pend = 0.7f;
-
+*/
 float VoltageFromADCVoltage(const long& res) {
   return (res/256.0f) * Vref;
 }

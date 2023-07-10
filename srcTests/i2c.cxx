@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-
+#include "parameters.hpp"
 //C things
 extern "C" {
   //remember to include -li2c
@@ -12,6 +12,7 @@ extern "C" {
 #include <errno.h>
 #include <string.h>
 
+/*
 constexpr float Vin = 3.3f;
 constexpr float Vref = 3.3f;
 constexpr int adapterNumber = 1;
@@ -30,6 +31,7 @@ constexpr float parB = 4100.0f;
 //lux sensor
 constexpr float Rlux0 = 70000.0f;
 constexpr float Pend = 0.7f;
+*/
 
 float VoltageFromADCVoltage(const long& res) {
   return (res/256.0f) * Vref;
