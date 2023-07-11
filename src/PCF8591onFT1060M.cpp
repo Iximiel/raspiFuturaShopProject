@@ -69,7 +69,6 @@ namespace FT1060M {
       channel |= AnalogOutputEnableMask;
     }
     int write_check = -1;
-    int readTimes = times;
     do {
       write_check = i2c_smbus_write_byte (deviceFile_, channel);
 #ifndef NDEBUG
@@ -83,15 +82,11 @@ namespace FT1060M {
         " for reading";
     }
     i2c_smbus_read_byte (deviceFile_);
-    i2c_smbus_read_byte (deviceFile_);
-    int res = -1;
-    do {
-      res = i2c_smbus_read_byte (deviceFile_);
+    // i2c_smbus_read_byte (deviceFile_);
+    int res = i2c_smbus_read_byte (deviceFile_);
 #ifndef NDEBUG
-      std::cout << "reading " << ch << " : " << res << " " << times << "\n";
+    std::cout << "reading " << ch << " : " << res << "\n";
 #endif
-      --readTimes;
-    } while (write_check != 0 && readTimes > 0);
     if (res < 0) {
       throw "error at reading channel " + std::to_string (channel);
     }

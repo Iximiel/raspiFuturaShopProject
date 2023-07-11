@@ -1,17 +1,17 @@
-#include <iostream>
-#include <cmath>
 #include "parameters.hpp"
-//C things
+#include <cmath>
+#include <iostream>
+// C things
 extern "C" {
-  //remember to include -li2c
-#include <linux/i2c-dev.h>
+// remember to include -li2c
 #include <i2c/smbus.h>
+#include <linux/i2c-dev.h>
 }
-#include <sys/ioctl.h>
-#include <fcntl.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <string.h>
-
+#include <sys/ioctl.h>
+using namespace FT1060Mparameters;
 /*
 constexpr float Vin = 3.3f;
 constexpr float Vref = 3.3f;
@@ -33,69 +33,67 @@ constexpr float Rlux0 = 70000.0f;
 constexpr float Pend = 0.7f;
 */
 
-float VoltageFromADCVoltage(const long& res) {
-  return (res/256.0f) * Vref;
-}
+float VoltageFromADCVoltage (const long &res) { return (res / 256.0f) * Vref; }
 
-float ResinstanceFromADCVoltage(const long& res) {
-  float V = VoltageFromADCVoltage(res);
-  return  (R1*V) / (Vin - V);
+float ResinstanceFromADCVoltage (const long &res) {
+  float V = VoltageFromADCVoltage (res);
+  return (R1 * V) / (Vin - V);
 }
 // this is the c style thing
-int main(int, char**) {
+int main (int, char **) {
   std::string device = "/dev/i2c-";
-  device+=std::to_string(adapterNumber);
-  int file = open(device.c_str(), O_RDWR);
+  device += std::to_string (adapterNumber);
+  int file = open (device.c_str (), O_RDWR);
   if (file < 0) {
     /* ERROR HANDLING; you can check errno to see what went wrong */
     std::cerr << "failed to open file\n";
-    exit(1);
+    exit (1);
   }
-  
-  if (ioctl(file, I2C_SLAVE, i2CAddress) < 0) {
+
+  if (ioctl (file, I2C_SLAVE, i2CAddress) < 0) {
     /* ERROR HANDLING; you can check errno to see what went wrong */
     std::cerr << "not i2c slave\n";
-    exit(1);
+    exit (1);
   }
-  //set registry
+  // set registry
 
-  //unsigned channelLux = 0x41;
-  //unsigned channelTemp = 0x40;
+  // unsigned channelLux = 0x41;
+  // unsigned channelTemp = 0x40;
   unsigned channelLux = 0x1;
   unsigned channelTemp = 0x0;
   {
-    i2c_smbus_write_byte(file,channelLux);
-    long res = i2c_smbus_read_byte(file);
-    res = i2c_smbus_read_byte(file);
-    res = i2c_smbus_read_byte(file);
-    float Rlux = ResinstanceFromADCVoltage(res);
-    float Lux = pow(Rlux/Rlux0,1.0/-Pend);
-    if(res <0 ){
+    i2c_smbus_write_byte (file, channelLux);
+    long res = i2c_smbus_read_byte (file);
+    res = i2c_smbus_read_byte (file);
+    res = i2c_smbus_read_byte (file);
+    float Rlux = ResinstanceFromADCVoltage (res);
+    float Lux = pow (Rlux / Rlux0, 1.0 / -Pend);
+    if (res < 0) {
       std::cerr << "Failed to read lux\n";
     } else {
-      std::cout << "Lux: " << Lux <<std::endl;
+      std::cout << "Lux: " << Lux << std::endl;
     }
   }
   {
-    i2c_smbus_write_byte(file,channelTemp);
-    long res = i2c_smbus_read_byte(file);
-    res = i2c_smbus_read_byte(file);
-    res = i2c_smbus_read_byte(file);
-    float V = VoltageFromADCVoltage(res);
-    float Rth = ResinstanceFromADCVoltage(res);
-    float lR = log(Rth/Rth0);
-    float lRsq = lR*lR;
-    float lRcb = lRsq*lR;
-    float T = 1.0f/(sA + sB*lR + sC*lRsq + sD*lRcb);
-    T = T-zeroKelvin - V*V / ( K*Rth);
-    lR = log(Rth/10000.0f);
-    float T2 = 1.0f/((1.0f/298.15f) + lR/parB);
-    T2 = T2-zeroKelvin - V*V / ( K*Rth);
-    if(res <0 ){
+    i2c_smbus_write_byte (file, channelTemp);
+    long res = i2c_smbus_read_byte (file);
+    res = i2c_smbus_read_byte (file);
+    res = i2c_smbus_read_byte (file);
+    float V = VoltageFromADCVoltage (res);
+    float Rth = ResinstanceFromADCVoltage (res);
+    float lR = log (Rth / Rth0);
+    float lRsq = lR * lR;
+    float lRcb = lRsq * lR;
+    float T = 1.0f / (sA + sB * lR + sC * lRsq + sD * lRcb);
+    T = T - zeroKelvin - V * V / (K * Rth);
+    lR = log (Rth / 10000.0f);
+    float T2 = 1.0f / ((1.0f / 298.15f) + lR / parB);
+    T2 = T2 - zeroKelvin - V * V / (K * Rth);
+    if (res < 0) {
       std::cerr << "Failed to read temperature\n";
     } else {
-      std::cout << "Temperature: " << T <<std::endl;
-      std::cout << "Temperature: " << T2 <<std::endl;
+      std::cout << "Temperature: " << T << std::endl;
+      std::cout << "Temperature: " << T2 << std::endl;
     }
   }
   return 0;
