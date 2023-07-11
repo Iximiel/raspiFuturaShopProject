@@ -1,4 +1,5 @@
 #include "PCF8591onFT1060M.hpp"
+#include "FT1060Mexcept.hpp"
 
 // C things
 extern "C" { // remember to include -li2c
@@ -26,8 +27,9 @@ namespace FT1060M {
     deviceFile_ = open (device_.c_str (), O_RDWR);
     if (deviceFile_ < 0) {
       /* ERROR HANDLING; you can check errno to see what went wrong */
-      throw std::string ("failed to open device, code") +
-        std::to_string (deviceFile_);
+      throw FT1060MException (
+        std::string ("failed to open device, code") +
+        std::to_string (deviceFile_));
     }
 
     if (ioctl (deviceFile_, I2C_SLAVE, i2CAddress) < 0) {
@@ -78,8 +80,9 @@ namespace FT1060M {
       --times;
     } while (write_check != 0 && times > 0);
     if (write_check < 0) {
-      throw "error at preparing channel " + std::to_string (channel) +
-        " for reading";
+      throw FT1060MException (
+        "error at preparing channel " + std::to_string (channel) +
+        " for reading");
     }
     i2c_smbus_read_byte (deviceFile_);
     // i2c_smbus_read_byte (deviceFile_);
@@ -88,7 +91,8 @@ namespace FT1060M {
     std::cout << "reading " << ch << " : " << res << "\n";
 #endif
     if (res < 0) {
-      throw "error at reading channel " + std::to_string (channel);
+      throw FT1060MException (
+        "error at reading channel " + std::to_string (channel));
     }
     return res;
   }

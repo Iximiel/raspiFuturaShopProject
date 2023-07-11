@@ -1,4 +1,5 @@
 #include "FT1060Mdata.hpp"
+#include "FT1060Mexcept.hpp"
 #include "PCF8591onFT1060M.hpp"
 #include "parameters.hpp"
 #include <iostream>
@@ -37,6 +38,10 @@ int main (int, char **) {
     retval = 1;
   } catch (const std::string &problem) {
     std::cerr << "\033[1;31mERROR: \033[0m\033[1m" << problem << "\033[0m"
+              << std::endl;
+    retval = 1;
+  } catch (FT1060MException &e) {
+    std::cerr << "\033[1;31mERROR: \033[0m\033[1m" << e.what () << "\033[0m"
               << std::endl;
     retval = 1;
   }
