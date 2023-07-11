@@ -4,9 +4,10 @@ cmake_minimum_required(VERSION 3.10)
 # set the project name
 project(RaspiFT1060Mpp VERSION 0.1)
 set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include_directories(${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/include)
 
 add_subdirectory(src)
 add_subdirectory(srcTests)
-#add_subdirectory(pybind11)
+add_subdirectory(pybind11)
